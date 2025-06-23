@@ -123,10 +123,28 @@ if user_input:
             if feedback:
                 st.info("✅ Feedback recorded. Thank you!")
 
+# State to track if anyone was marked as hired
+if "hired_candidates" not in st.session_state:
+    st.session_state["hired_candidates"] = []
 
-# Optional global summary
-st.header("📊 Final Hiring Summary")
-st.markdown("- 👤 2 Candidates interviewed")
-st.markdown("- ✅ 1 Hired")
-st.markdown("- 🕐 Avg time-to-hire: 1.2 days")
+# Inside each candidate loop (update this block)
+if st.button(f"🎉 Mark {c['Name']} as Hired", key=f"hired_{c['Name']}"):
+    st.success(f"🎉 {c['Name']} marked as hired!")
+    st.session_state["hired_candidates"].append(c['Name'])
+
+    feedback = st.text_area(
+        f"Optional: Share feedback on {c['Name']}’s interview or hiring experience",
+        key=f"feedback_{c['Name']}"
+    )
+    if feedback:
+        st.info("✅ Feedback recorded. Thank you!")
+
+# ✅ Show final summary only if at least one hire is made
+if st.session_state["hired_candidates"]:
+    st.header("📊 Final Hiring Summary")
+    st.markdown(f"- 👤 {len(st.session_state['hired_candidates'])} candidate(s) hired:")
+    for name in st.session_state["hired_candidates"]:
+        st.markdown(f"  - ✅ {name}")
+    st.markdown("- 🕐 Avg time-to-hire: ~1.2 days (simulated)")
+
 
