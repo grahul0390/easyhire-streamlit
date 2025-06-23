@@ -9,7 +9,6 @@ user_input = st.text_input("Type your hiring need:", placeholder="e.g., Need a d
 if user_input:
     st.header("Step 2: AI Parsed Job Intent")
 
-    # Simulated structured output from AI
     parsed_output = {
         "Role Title": "Delivery Executive",
         "Location": "Bangalore",
@@ -17,5 +16,30 @@ if user_input:
         "Language": "Any",
         "Experience": "0–2 years"
     }
-
     st.json(parsed_output)
+
+    st.header("Step 3: AI-Matched Candidates")
+
+    candidates = [
+        {
+            "Name": "Rahul Sharma",
+            "Experience": "2 years",
+            "Location": "Bangalore",
+            "Skills": ["Bike", "Area Knowledge", "Customer Service"],
+            "Match %": 92
+        },
+        {
+            "Name": "Arjun Mehta",
+            "Experience": "1.5 years",
+            "Location": "Bangalore",
+            "Skills": ["Bike", "Delivery"],
+            "Match %": 85
+        },
+        {
+            "Name": "Sameer Rao",
+            "Experience": "3 years",
+            "Location": "Mysore",
+            "Skills": ["Logistics", "Driving"],
+            "Match %": 73
+        }
+    ]
