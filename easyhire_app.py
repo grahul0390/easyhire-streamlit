@@ -82,28 +82,31 @@ if user_input:
         }
     ]
 
-    for c in engaged_candidates:
-        with st.container():
-            st.subheader(f"📲 {c['Name']}")
-            st.markdown(f"💬 **Reply:** _{c['Reply']}_")
+   for c in engaged_candidates:
+    with st.container():
+        # ... your previous code ...
+        
+        st.subheader(f"📲 {c['Name']}")
+        st.markdown(f"💬 **Reply:** _{c['Reply']}_")
 
-            st.markdown("🧾 **Pre-Screening Summary:**")
-            for question, answer in c["Screening"].items():
-                st.markdown(f"- **{question}**: {answer}")
+        # Pre-screen answers
+        st.markdown("🧾 **Pre-Screening Summary:**")
+        for question, answer in c["Screening"].items():
+            st.markdown(f"- **{question}**: {answer}")
 
-            st.markdown("---")
-
+        # Buttons for Shortlist / Reject / Chat
         col1, col2, col3 = st.columns(3)
         with col1:
-            if st.button(f"✅ Shortlist {c['Name']}"):
+            if st.button(f"✅ Shortlist {c['Name']}", key=f"shortlist_{c['Name']}"):
                 st.success(f"{c['Name']} has been shortlisted.")
         with col2:
-            if st.button(f"❌ Reject {c['Name']}"):
+            if st.button(f"❌ Reject {c['Name']}", key=f"reject_{c['Name']}"):
                 st.warning(f"{c['Name']} has been rejected.")
         with col3:
-            if st.button(f"💬 Chat with {c['Name']}"):
+            if st.button(f"💬 Chat with {c['Name']}", key=f"chat_{c['Name']}"):
                 st.info(f"Chat started with {c['Name']} (simulated).")
 
+        # Interview Scheduling
         st.markdown("🗓️ **Schedule Interview:**")
         selected_slot = st.selectbox(
             f"Select time for interview with {c['Name']}",
@@ -113,38 +116,31 @@ if user_input:
         if st.button(f"📩 Confirm Interview with {c['Name']}", key=f"confirm_{c['Name']}"):
             st.success(f"Interview with {c['Name']} scheduled at {selected_slot}. Candidate notified via WhatsApp.")
 
-
-        st.markdown("🏁 **Hiring Confirmation**")
+        # 🏁 Hiring Confirmation
+        if "hired_candidates" not in st.session_state:
+            st.session_state["hired_candidates"] = []
 
         if st.button(f"🎉 Mark {c['Name']} as Hired", key=f"hired_{c['Name']}"):
             st.success(f"🎉 {c['Name']} marked as hired!")
+            st.session_state["hired_candidates"].append(c['Name'])
 
-            feedback = st.text_area(f"Optional: Share feedback on {c['Name']}’s interview or hiring experience", key=f"feedback_{c['Name']}")
+            feedback = st.text_area(
+                f"Optional: Share feedback on {c['Name']}’s interview or hiring experience",
+                key=f"feedback_{c['Name']}"
+            )
             if feedback:
                 st.info("✅ Feedback recorded. Thank you!")
 
-# State to track if anyone was marked as hired
-if "hired_candidates" not in st.session_state:
-    st.session_state["hired_candidates"] = []
+        st.markdown("---")  # separator between candidates
 
-# Inside each candidate loop (update this block)
-if st.button(f"🎉 Mark {c['Name']} as Hired", key=f"hired_{c['Name']}"):
-    st.success(f"🎉 {c['Name']} marked as hired!")
-    st.session_state["hired_candidates"].append(c['Name'])
 
-    feedback = st.text_area(
-        f"Optional: Share feedback on {c['Name']}’s interview or hiring experience",
-        key=f"feedback_{c['Name']}"
-    )
-    if feedback:
-        st.info("✅ Feedback recorded. Thank you!")
-
-# ✅ Show final summary only if at least one hire is made
-if st.session_state["hired_candidates"]:
+# Final Summary (after the for-loop)
+if "hired_candidates" in st.session_state and st.session_state["hired_candidates"]:
     st.header("📊 Final Hiring Summary")
     st.markdown(f"- 👤 {len(st.session_state['hired_candidates'])} candidate(s) hired:")
     for name in st.session_state["hired_candidates"]:
         st.markdown(f"  - ✅ {name}")
     st.markdown("- 🕐 Avg time-to-hire: ~1.2 days (simulated)")
+
 
 
