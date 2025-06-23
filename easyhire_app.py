@@ -82,7 +82,7 @@ if user_input:
         }
     ]
 
-   for c in engaged_candidates:
+ for c in engaged_candidates:
     with st.container():
         # ... your previous code ...
         
