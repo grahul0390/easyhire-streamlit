@@ -57,3 +57,39 @@ if user_input:
             - 🛠️ **Skills:** {', '.join(c['Skills'])}
             """)
             st.markdown("---")
+
+    # Step 4 – Auto-Engagement + WhatsApp Replies
+    st.header("Step 4: WhatsApp Auto-Engagement & Replies")
+
+    engaged_candidates = [
+        {
+            "Name": "Rahul Sharma",
+            "Reply": "Hi, I’m interested. I have a bike and live in Koramangala.",
+            "Screening": {
+                "Has Bike?": "Yes",
+                "Can Join Within 2 Days?": "Yes",
+                "Knows Local Area?": "Yes"
+            }
+        },
+        {
+            "Name": "Arjun Mehta",
+            "Reply": "Can I know the salary first?",
+            "Screening": {
+                "Has Bike?": "Yes",
+                "Can Join Within 2 Days?": "No",
+                "Knows Local Area?": "Somewhat"
+            }
+        }
+    ]
+
+    for c in engaged_candidates:
+        with st.container():
+            st.subheader(f"📲 {c['Name']}")
+            st.markdown(f"💬 **Reply:** _{c['Reply']}_")
+
+            st.markdown("🧾 **Pre-Screening Summary:**")
+            for question, answer in c["Screening"].items():
+                st.markdown(f"- **{question}**: {answer}")
+
+            st.markdown("---")
+
