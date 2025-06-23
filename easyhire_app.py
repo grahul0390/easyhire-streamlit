@@ -93,3 +93,22 @@ if user_input:
 
             st.markdown("---")
 
+        col1, col2, col3 = st.columns(3)
+        with col1:
+            if st.button(f"✅ Shortlist {c['Name']}"):
+                st.success(f"{c['Name']} has been shortlisted.")
+        with col2:
+            if st.button(f"❌ Reject {c['Name']}"):
+                st.warning(f"{c['Name']} has been rejected.")
+        with col3:
+            if st.button(f"💬 Chat with {c['Name']}"):
+                st.info(f"Chat started with {c['Name']} (simulated).")
+
+        st.markdown("🗓️ **Schedule Interview:**")
+        selected_slot = st.selectbox(
+            f"Select time for interview with {c['Name']}",
+            ["Today 3 PM", "Today 5 PM", "Tomorrow 10 AM", "Tomorrow 2 PM"],
+            key=f"slot_{c['Name']}"
+        )
+        if st.button(f"📩 Confirm Interview with {c['Name']}", key=f"confirm_{c['Name']}"):
+            st.success(f"Interview with {c['Name']} scheduled at {selected_slot}. Candidate notified via WhatsApp.")
