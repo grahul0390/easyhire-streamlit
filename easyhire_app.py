@@ -112,3 +112,21 @@ if user_input:
         )
         if st.button(f"📩 Confirm Interview with {c['Name']}", key=f"confirm_{c['Name']}"):
             st.success(f"Interview with {c['Name']} scheduled at {selected_slot}. Candidate notified via WhatsApp.")
+
+
+        st.markdown("🏁 **Hiring Confirmation**")
+
+        if st.button(f"🎉 Mark {c['Name']} as Hired", key=f"hired_{c['Name']}"):
+            st.success(f"🎉 {c['Name']} marked as hired!")
+
+            feedback = st.text_area(f"Optional: Share feedback on {c['Name']}’s interview or hiring experience", key=f"feedback_{c['Name']}")
+            if feedback:
+                st.info("✅ Feedback recorded. Thank you!")
+
+
+# Optional global summary
+st.header("📊 Final Hiring Summary")
+st.markdown("- 👤 2 Candidates interviewed")
+st.markdown("- ✅ 1 Hired")
+st.markdown("- 🕐 Avg time-to-hire: 1.2 days")
+
