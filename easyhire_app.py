@@ -8,6 +8,8 @@ user_input = st.text_input("Type your hiring need:", placeholder="e.g., Need a d
 
 if user_input:
     st.header("Step 2: AI Parsed Job Intent")
+
+    # Simulated structured output from AI
     parsed_output = {
         "Role Title": "Delivery Executive",
         "Location": "Bangalore",
@@ -15,4 +17,5 @@ if user_input:
         "Language": "Any",
         "Experience": "0–2 years"
     }
+
     st.json(parsed_output)
