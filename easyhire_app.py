@@ -82,19 +82,19 @@ if user_input:
         }
     ]
 
- for c in engaged_candidates:
+ if "hired_candidates" not in st.session_state:
+    st.session_state["hired_candidates"] = []
+
+for c in engaged_candidates:
     with st.container():
-        # ... your previous code ...
-        
         st.subheader(f"📲 {c['Name']}")
         st.markdown(f"💬 **Reply:** _{c['Reply']}_")
 
-        # Pre-screen answers
         st.markdown("🧾 **Pre-Screening Summary:**")
         for question, answer in c["Screening"].items():
             st.markdown(f"- **{question}**: {answer}")
 
-        # Buttons for Shortlist / Reject / Chat
+        # Shortlist / Reject / Chat
         col1, col2, col3 = st.columns(3)
         with col1:
             if st.button(f"✅ Shortlist {c['Name']}", key=f"shortlist_{c['Name']}"):
@@ -106,7 +106,7 @@ if user_input:
             if st.button(f"💬 Chat with {c['Name']}", key=f"chat_{c['Name']}"):
                 st.info(f"Chat started with {c['Name']} (simulated).")
 
-        # Interview Scheduling
+        # Interview scheduling
         st.markdown("🗓️ **Schedule Interview:**")
         selected_slot = st.selectbox(
             f"Select time for interview with {c['Name']}",
@@ -116,10 +116,7 @@ if user_input:
         if st.button(f"📩 Confirm Interview with {c['Name']}", key=f"confirm_{c['Name']}"):
             st.success(f"Interview with {c['Name']} scheduled at {selected_slot}. Candidate notified via WhatsApp.")
 
-        # 🏁 Hiring Confirmation
-        if "hired_candidates" not in st.session_state:
-            st.session_state["hired_candidates"] = []
-
+        # Hiring Confirmation
         if st.button(f"🎉 Mark {c['Name']} as Hired", key=f"hired_{c['Name']}"):
             st.success(f"🎉 {c['Name']} marked as hired!")
             st.session_state["hired_candidates"].append(c['Name'])
@@ -131,16 +128,4 @@ if user_input:
             if feedback:
                 st.info("✅ Feedback recorded. Thank you!")
 
-        st.markdown("---")  # separator between candidates
-
-
-# Final Summary (after the for-loop)
-if "hired_candidates" in st.session_state and st.session_state["hired_candidates"]:
-    st.header("📊 Final Hiring Summary")
-    st.markdown(f"- 👤 {len(st.session_state['hired_candidates'])} candidate(s) hired:")
-    for name in st.session_state["hired_candidates"]:
-        st.markdown(f"  - ✅ {name}")
-    st.markdown("- 🕐 Avg time-to-hire: ~1.2 days (simulated)")
-
-
-
+        st.markdown("---")  # divider between candidates
