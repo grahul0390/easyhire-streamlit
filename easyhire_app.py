@@ -1,16 +1,30 @@
 import streamlit as st
+import time
 
-# App setup
-st.set_page_config(page_title="EasyHire AI", layout="centered")
-st.title("🧠 EasyHire AI – SMB Hiring Assistant")
-st.markdown("Hire in minutes. Just say what you need.")
+# Set up the app
+st.set_page_config(page_title="AI Recruiter for SMBs", layout="wide")
+st.title("🤖 EasyHire AI – Your AI Recruiter for SMBs")
+st.markdown("Just say what you need. We'll hire for you!")
 
-# User input
-user_input = st.text_input("Type your hiring need:", placeholder="e.g., Need a delivery boy with bike in Bangalore")
+# Initialize session state
+if "step" not in st.session_state:
+    st.session_state.step = 1
+if "user_input" not in st.session_state:
+    st.session_state.user_input = ""
 
-if user_input:
-    # Step 2 – AI Parsing Simulation
-    st.header("Step 2: AI Parsed Job Intent")
+# Step 1: Get user input
+if st.session_state.step == 1:
+    st.subheader("📍 Step 1: Describe Your Hiring Need")
+    st.session_state.user_input = st.text_input("Voice/Text Input:", "")
+    if st.session_state.user_input:
+        if st.button("🔍 Parse Requirement with AI"):
+            st.session_state.step = 2
+
+# Step 2: AI Parses the requirement
+if st.session_state.step == 2:
+    with st.spinner("🤖 Parsing your requirement..."):
+        time.sleep(2)
+    st.markdown("### ✅ AI Parsed Job Intent")
     parsed_output = {
         "Role Title": "Delivery Executive",
         "Location": "Bangalore",
@@ -19,96 +33,53 @@ if user_input:
         "Experience": "0–2 years"
     }
     st.json(parsed_output)
+    if st.button("🎯 Find Matching Candidates"):
+        st.session_state.step = 3
 
-    # Step 3 – Candidate Matching
-    st.header("Step 3: AI-Matched Candidates")
-
-    candidates = [
-        {
-            "Name": "Rahul Sharma",
-            "Experience": "2 years",
-            "Location": "Bangalore",
-            "Skills": ["Bike", "Area Knowledge", "Customer Service"],
-            "Match": 92
-        },
-        {
-            "Name": "Arjun Mehta",
-            "Experience": "1.5 years",
-            "Location": "Bangalore",
-            "Skills": ["Bike", "Delivery"],
-            "Match": 85
-        },
-        {
-            "Name": "Sameer Rao",
-            "Experience": "3 years",
-            "Location": "Mysore",
-            "Skills": ["Logistics", "Driving"],
-            "Match": 73
-        }
+# Step 3: Show matched candidates
+if st.session_state.step == 3:
+    with st.spinner("🔍 Matching candidates from LinkedIn..."):
+        time.sleep(2)
+    st.markdown("### 🎯 Top Matched Candidates")
+    st.session_state.candidates = [
+        {"Name": "Rahul Sharma", "Match": 92},
+        {"Name": "Arjun Mehta", "Match": 85},
+        {"Name": "Sameer Rao", "Match": 73}
     ]
+    for c in st.session_state.candidates:
+        st.markdown(f"**👤 {c['Name']}** – Match Score: **{c['Match']}%**")
+    if st.button("📲 Engage Top Candidate via WhatsApp"):
+        st.session_state.step = 4
 
-    # Render candidate cards
-    for c in candidates:
-        with st.container():
-            st.markdown(f"""
-            #### {c['Name']} — {c['Match']}% Match
-            - 📍 **Location:** {c['Location']}
-            - 🧑‍💼 **Experience:** {c['Experience']}
-            - 🛠️ **Skills:** {', '.join(c['Skills'])}
-            """)
-            st.markdown("---")
-
-    # Step 4 – Auto-Engagement + WhatsApp Replies
-    st.header("Step 4: WhatsApp Auto-Engagement & Replies")
-
-    engaged_candidates = [
-        {
-            "Name": "Rahul Sharma",
-            "Reply": "Hi, I’m interested. I have a bike and live in Koramangala.",
-            "Screening": {
-                "Has Bike?": "Yes",
-                "Can Join Within 2 Days?": "Yes",
-                "Knows Local Area?": "Yes"
-            }
-        },
-        {
-            "Name": "Arjun Mehta",
-            "Reply": "Can I know the salary first?",
-            "Screening": {
-                "Has Bike?": "Yes",
-                "Can Join Within 2 Days?": "No",
-                "Knows Local Area?": "Somewhat"
-            }
-        }
+# Step 4: Simulate WhatsApp conversation
+if st.session_state.step == 4:
+    with st.spinner("📲 Engaging candidates via WhatsApp..."):
+        time.sleep(2)
+    st.markdown("### 💬 Candidate Conversation with Rahul Sharma")
+    chat = [
+        ("AI", "Hi Rahul, job available near you. Interested?"),
+        ("Rahul", "Yes! I can start tomorrow."),
+        ("AI", "Do you know the area?"),
+        ("Rahul", "Yes, very well.")
     ]
+    for speaker, msg in chat:
+        st.markdown(f"**{speaker}**: {msg}")
+    st.success("✅ Screening passed.")
+    if st.button("📅 Schedule Interview"):
+        st.session_state.step = 5
 
-    for c in engaged_candidates:
-        with st.container():
-            st.subheader(f"📲 {c['Name']}")
-            st.markdown(f"💬 **Reply:** _{c['Reply']}_")
-
-            st.markdown("🧾 **Pre-Screening Summary:**")
-            for question, answer in c["Screening"].items():
-                st.markdown(f"- **{question}**: {answer}")
-
-            st.markdown("---")
-
-        col1, col2, col3 = st.columns(3)
-        with col1:
-            if st.button(f"✅ Shortlist {c['Name']}"):
-                st.success(f"{c['Name']} has been shortlisted.")
-        with col2:
-            if st.button(f"❌ Reject {c['Name']}"):
-                st.warning(f"{c['Name']} has been rejected.")
-        with col3:
-            if st.button(f"💬 Chat with {c['Name']}"):
-                st.info(f"Chat started with {c['Name']} (simulated).")
-
-        st.markdown("🗓️ **Schedule Interview:**")
-        selected_slot = st.selectbox(
-            f"Select time for interview with {c['Name']}",
-            ["Today 3 PM", "Today 5 PM", "Tomorrow 10 AM", "Tomorrow 2 PM"],
-            key=f"slot_{c['Name']}"
-        )
-        if st.button(f"📩 Confirm Interview with {c['Name']}", key=f"confirm_{c['Name']}"):
-            st.success(f"Interview with {c['Name']} scheduled at {selected_slot}. Candidate notified via WhatsApp.")
+# Step 5: Schedule interview
+if st.session_state.step == 5:
+    st.markdown("### 🗓️ Interview Scheduling")
+    slot = st.selectbox("Select Interview Time", [
+        "Today at 3 PM", "Today at 5 PM", "Tomorrow at 10 AM", "Tomorrow at 2 PM"
+    ])
+    if st.button("📩 Confirm Interview"):
+        with st.spinner("Scheduling..."):
+            time.sleep(2)
+        st.markdown("### ✅ Interview Confirmed")
+        st.markdown("- **Candidate:** Rahul Sharma")
+        st.markdown(f"- **Time:** {slot}")
+        st.markdown("- **Mode:** Phone call")
+        st.balloons()
+        st.success("🎉 Candidate successfully scheduled for interview!")
