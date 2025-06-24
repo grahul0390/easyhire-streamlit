@@ -1,4 +1,3 @@
-
 import streamlit as st
 import time
 
@@ -25,35 +24,56 @@ if user_input:
             "Experience": "0–2 years"
         })
 
-    with st.spinner("🔍 Matching candidates from LinkedIn..."):
-        time.sleep(2)
-        st.markdown("### 🎯 Top Matched Candidates")
-        candidates = [
-            {"Name": "Rahul Sharma", "Match": 92},
-            {"Name": "Arjun Mehta", "Match": 85},
-            {"Name": "Sameer Rao", "Match": 73}
-        ]
-        for c in candidates:
-            st.markdown(f"- **{c['Name']}** – Match Score: {c['Match']}%")
+    st.markdown("---")
+    if st.button("🎯 Show Top Matched Candidates"):
+        with st.spinner("🔍 Matching candidates from LinkedIn..."):
+            time.sleep(2)
+            st.markdown("### 👥 Top Matched Candidates")
+            candidates = [
+                {
+                    "Name": "Rahul Sharma",
+                    "Match": 92,
+                    "Reason": "Owns a bike, 1.5 years of delivery experience in Bangalore, fluent in Kannada."
+                },
+                {
+                    "Name": "Arjun Mehta",
+                    "Match": 85,
+                    "Reason": "2 years of experience, lives near Koramangala, familiar with local routes."
+                }
+            ]
+            for c in candidates:
+                st.markdown(f"**{c['Name']}** – Match Score: {c['Match']}%  \n> _{c['Reason']}_")
 
-    with st.spinner("📲 Engaging candidates via WhatsApp..."):
-        time.sleep(2)
-        st.markdown("### 💬 Candidate Conversations")
-        chat = [
-            ("AI", "Hi Rahul, job available near you. Interested?"),
-            ("Rahul", "Yes! I can start tomorrow."),
-            ("AI", "Do you know the area?"),
-            ("Rahul", "Yes, very well.")
-        ]
-        for speaker, msg in chat:
-            st.markdown(f"**{speaker}**: {msg}")
-        st.success("✅ Screening passed.")
+        st.markdown("---")
+        if st.button("📲 Reach Out to Candidates"):
+            with st.spinner("Starting AI-driven conversation on WhatsApp..."):
+                time.sleep(2)
+                st.markdown("### 💬 Sample AI Conversation")
 
-    with st.spinner("📅 Scheduling Interview..."):
-        time.sleep(2)
-        st.markdown("### 🗓️ Interview Confirmed")
-        st.markdown("- **Candidate:** Rahul Sharma")
-        st.markdown("- **Time:** Today at 3 PM")
-        st.markdown("- **Mode:** Phone call")
-        st.balloons()
-        st.success("🎉 Candidate successfully scheduled for interview!")
+                chat = [
+                    ("AI", "Hi Rahul, a delivery job is available in your area. Are you interested?"),
+                    ("Rahul", "Yes, I'm interested."),
+                    ("AI", "Great! Do you own a bike and know the Rajajinagar area?"),
+                    ("Rahul", "Yes to both."),
+                    ("AI", "Perfect. Can you join in 2 days?"),
+                    ("Rahul", "Yes, I can.")
+                ]
+                for speaker, msg in chat:
+                    st.markdown(f"**{speaker}**: {msg}")
+                st.success("✅ Candidate pre-screened and eligible")
+
+            st.markdown("---")
+            if st.button("📅 Confirm or Reschedule Interview"):
+                with st.spinner("Fetching available time slots..."):
+                    time.sleep(2)
+                    st.markdown("### 🗓️ Interview Scheduling")
+
+                    selected = st.radio("Choose a time slot:", ["Today 3 PM", "Today 5 PM", "Tomorrow 10 AM"])
+                    custom_time = st.text_input("Or suggest a new time (e.g., Tomorrow 4 PM)", "")
+
+                    if st.button("✅ Confirm Interview Time"):
+                        time_slot = custom_time if custom_time else selected
+                        with st.spinner("Notifying candidate..."):
+                            time.sleep(2)
+                            st.success(f"Interview confirmed at **{time_slot}**.")
+                            st.markdown("🎉 AI has notified Rahul and sent a calendar invite.")
