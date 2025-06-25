@@ -3,7 +3,7 @@ import time
 
 # Set up the app
 st.set_page_config(page_title="AI Recruiter for SMBs", layout="wide")
-st.title("🤖 EasyHire AI – Your AI Recruiter for SMBs")
+st.title("🤖 SMBHire AI – Your AI Recruiter for SMBs")
 st.markdown("Just say what you need. We'll hire for you!")
 
 # Initialize session state
