@@ -44,7 +44,7 @@ candidates_data = [
 # Step 1: Get user input
 if st.session_state.step == 1:
     st.subheader("📍 Step 1: Describe Your Hiring Need")
-    st.session_state.user_input = st.text_input("Voice/Text Input:", " Need a Delivery boy in bangalore with bike")
+    st.session_state.user_input = st.text_input("Voice/Text Input:", " ")
     if st.session_state.user_input:
         if st.button("🔍 Parse Requirement with AI"):
             st.session_state.step = 2
