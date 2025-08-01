@@ -3,13 +3,9 @@ import random
 import time
 from openai import OpenAI
 import os
-from dotenv import load_dotenv
-
-# Load environment variables from .env file
-load_dotenv()
 
 # Set your OpenAI API key securely
-openai.api_key = os.getenv("OPENAI_API_KEY")
+openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Dummy candidate pool
 CANDIDATES = [
