@@ -3,9 +3,13 @@ import random
 import time
 import openai
 import os
+from dotenv import load_dotenv
 
-# Set your OpenAI API key
-openai.api_key = os.getenv("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")
+# Load environment variables from .env file
+load_dotenv()
+
+# Set your OpenAI API key securely
+openai.api_key = os.getenv("OPENAI_API_KEY")
 
 # Dummy candidate pool
 CANDIDATES = [
@@ -24,20 +28,20 @@ CANDIDATES = [
 # Function to simulate AI parsing of job intent
 def parse_job_intent(requirement_text):
     prompt = f"""
-    Extract structured hiring intent from the following requirement:
+Extract structured hiring intent from the following requirement:
 
-    Input: """{requirement_text}"""
+Input: \"\"\"{requirement_text}\"\"\"
 
-    Format:
-    {{
-        "Role Title": <string>,
-        "Location": <string>,
-        "Requirements": [<list of required skills or attributes>],
-        "Language": <string>,
-        "Experience": <string>
-    }}
-    """
-    
+Format:
+{{
+    "Role Title": <string>,
+    "Location": <string>,
+    "Requirements": [<list of required skills or attributes>],
+    "Language": <string>,
+    "Experience": <string>
+}}
+"""
+
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
