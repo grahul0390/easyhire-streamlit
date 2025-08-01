@@ -45,7 +45,6 @@ Format:
     "Experience": <string>
 }}
 """
-
     response = client.chat.completions.create(
         model="gpt-4",
         messages=[
