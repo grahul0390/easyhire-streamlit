@@ -1,136 +1,114 @@
 import streamlit as st
-import openai
 import random
+import time
+import openai
+import os
 
-# Set your OpenAI API key here or in your environment
-openai.api_key = st.secrets["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"]
+# Set your OpenAI API key
+openai.api_key = os.getenv("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")
 
-# ----- MOCK CANDIDATE POOL ----- #
-candidate_pool = [
-    {
-        "name": "Amit Kumar",
-        "location": "Bangalore",
-        "experience": 1,
-        "skills": ["bike ownership", "local knowledge", "delivery"],
-        "language": "Hindi",
-    },
-    {
-        "name": "Priya Sharma",
-        "location": "Bangalore",
-        "experience": 2,
-        "skills": ["bike ownership", "Google Maps", "customer service"],
-        "language": "English",
-    },
-    {
-        "name": "Rahul Verma",
-        "location": "Mumbai",
-        "experience": 1,
-        "skills": ["delivery", "punctuality", "bike ownership"],
-        "language": "Marathi",
-    },
-    {
-        "name": "Sneha Reddy",
-        "location": "Hyderabad",
-        "experience": 3,
-        "skills": ["local knowledge", "customer support", "bike ownership"],
-        "language": "Telugu",
-    },
-    {
-        "name": "Mohit Singh",
-        "location": "Bangalore",
-        "experience": 0,
-        "skills": ["bike ownership", "delivery"],
-        "language": "Hindi",
-    },
-    # Add more profiles as needed...
+# Dummy candidate pool
+CANDIDATES = [
+    {"name": "Ravi Kumar", "location": "Bangalore", "skills": ["delivery", "bike", "local knowledge"], "experience": "1 year"},
+    {"name": "Pooja Reddy", "location": "Hyderabad", "skills": ["bike", "communication", "delivery"], "experience": "2 years"},
+    {"name": "Amit Sharma", "location": "Delhi", "skills": ["sales", "cold calling", "CRM"], "experience": "3 years"},
+    {"name": "Neha Verma", "location": "Mumbai", "skills": ["telecalling", "data entry", "MS Excel"], "experience": "1.5 years"},
+    {"name": "Rajesh Iyer", "location": "Chennai", "skills": ["delivery", "local knowledge"], "experience": "1 year"},
+    {"name": "Sneha Das", "location": "Bangalore", "skills": ["retail", "POS", "customer handling"], "experience": "2.5 years"},
+    {"name": "Ankit Patel", "location": "Ahmedabad", "skills": ["bike", "delivery", "maps"], "experience": "6 months"},
+    {"name": "Shreya Nair", "location": "Mumbai", "skills": ["calling", "coordination"], "experience": "2 years"},
+    {"name": "Deepak Choudhary", "location": "Bangalore", "skills": ["delivery", "bike", "local knowledge", "communication"], "experience": "1.5 years"},
+    {"name": "Meera Joshi", "location": "Pune", "skills": ["data entry", "back office", "Excel"], "experience": "1 year"},
 ]
 
-# ----- FUNCTIONS ----- #
-def parse_job_requirement(requirement_text):
-    prompt = f"""You are a helpful recruiter assistant. Parse the following hiring requirement into structured fields:
-Role Title, Location, Required Skills, Language, Experience
+# Function to simulate AI parsing of job intent
+def parse_job_intent(requirement_text):
+    prompt = f"""
+    Extract structured hiring intent from the following requirement:
 
-Input: \"\"\"{requirement_text}\"\"\"
-"""
+    Input: """{requirement_text}"""
 
-    Output as JSON.
+    Format:
+    {{
+        "Role Title": <string>,
+        "Location": <string>,
+        "Requirements": [<list of required skills or attributes>],
+        "Language": <string>,
+        "Experience": <string>
+    }}
     """
+    
     response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
+            {"role": "system", "content": "You are an expert recruiter assistant."},
             {"role": "user", "content": prompt}
-        ]
+        ],
+        temperature=0.5,
+        max_tokens=300
     )
-    return eval(response["choices"][0]["message"]["content"].strip())
+    parsed = response["choices"][0]["message"]["content"].strip()
+    return eval(parsed)
 
-def match_candidates(parsed):
+# Function to match candidates
+def match_candidates(job):
     matches = []
-    for candidate in candidate_pool:
+    for candidate in CANDIDATES:
         score = 0
-        if candidate["location"].lower() == parsed["Location"].lower():
+        if candidate["location"].lower() == job["Location"].lower():
             score += 1
-        if parsed["Experience"] >= candidate["experience"]:
-            score += 1
-        skill_match = len(set(candidate["skills"]).intersection(set(parsed["Requirements"])))
-        score += skill_match
-        matches.append({"candidate": candidate, "score": score})
-    matches.sort(key=lambda x: x["score"], reverse=True)
-    return matches[:3]
+        skill_overlap = set(candidate["skills"]).intersection(set(job["Requirements"]))
+        score += len(skill_overlap)
+        if score >= 2:
+            matches.append((candidate, score))
+    matches.sort(key=lambda x: x[1], reverse=True)
+    return [m[0] for m in matches[:3]]
 
-def simulate_ai_chat(candidate, job):
-    return f"""
-    🤖 AI: Hi {candidate['name']}, we found a job opportunity as a {job['Role Title']} in {job['Location']} that matches your profile.
+# Function to generate explanation
+def generate_explanation(candidate, job):
+    overlap = set(candidate["skills"]).intersection(set(job["Requirements"]))
+    return f"{candidate['name']} is a good fit because they have {', '.join(overlap)} and are based in {candidate['location']}."
 
-    🧑‍💼 {candidate['name']}: Sounds good! What are the details?
+# Sample conversation
+def get_sample_conversation(candidate, job):
+    return [
+        f"AI: Hi {candidate['name']}, we found a job opportunity as a {job['Role Title']} in {job['Location']} that matches your profile.",
+        "AI: Would you like to learn more or proceed with the application?",
+        f"{candidate['name']}: Yes, I'm interested!",
+        "AI: Great! Can you confirm your availability for an interview tomorrow at 3 PM?",
+        f"{candidate['name']}: That works for me.",
+        "AI: Interview confirmed. You'll receive details shortly."
+    ]
 
-    🤖 AI: It requires {', '.join(job['Requirements'])}. Are you interested in exploring it?
+# Streamlit App
+st.title("SMBHire AI Recruiter")
 
-    🧑‍💼 {candidate['name']}: Yes, I am.
+# Step 1: Input
+requirement_text = st.text_area("Step 1: Enter your hiring requirement")
 
-    🤖 AI: Great. Can you do a 15-min call tomorrow at 11 AM?
+if st.button("Submit Requirement"):
+    with st.spinner("Parsing job intent using AI..."):
+        job = parse_job_intent(requirement_text)
+        st.success("AI Parsed Job Intent")
+        st.json(job)
 
-    🧑‍💼 {candidate['name']}: Sure!
-
-    ✅ AI has scheduled the interview for tomorrow at 11 AM.
-    """
-
-# ----- STREAMLIT UI ----- #
-st.title("🧠 SMBHire AI Recruiter")
-st.markdown("Automating hiring for small businesses with AI")
-
-# Step 1: Recruiter input
-requirement = st.text_area("Enter your hiring requirement (e.g., 'Need a delivery boy in Bangalore who owns a bike and knows the city. Experience 1-2 years')")
-
-if requirement and st.button("🚀 Run AI Recruiter"):
-    with st.spinner("Parsing job requirement with AI..."):
-        parsed = parse_job_requirement(requirement)
-
-    st.subheader("Step 1: AI-Parsed Job Intent")
-    st.json(parsed)
-
-    if st.button("🔍 Find Top Candidates"):
+    if st.button("Find Top Matched Candidates"):
         with st.spinner("Matching candidates..."):
-            top_matches = match_candidates(parsed)
+            candidates = match_candidates(job)
+            st.subheader("Top Matched Candidates")
+            for candidate in candidates:
+                explanation = generate_explanation(candidate, job)
+                st.markdown(f"**{candidate['name']}** ({candidate['experience']} experience)")
+                st.markdown(f"Location: {candidate['location']}")
+                st.markdown(f"Skills: {', '.join(candidate['skills'])}")
+                st.info(explanation)
 
-        st.subheader("Step 2: Top Matches")
-        for m in top_matches:
-            c = m["candidate"]
-            st.markdown(f"**{c['name']}** — {c['location']} — {c['experience']} yrs exp")
-            st.markdown(f"🧩 Skills match: {', '.join(c['skills'])}")
-            st.markdown(f"🤝 Match Score: {m['score']}/5")
+                if st.button(f"Initiate Conversation with {candidate['name']}", key=candidate['name']):
+                    conversation = get_sample_conversation(candidate, job)
+                    for line in conversation:
+                        st.write(line)
 
-        if st.button("💬 Start AI Outreach"):
-            st.subheader("Step 3: AI-to-Candidate Conversation")
-            for m in top_matches:
-                convo = simulate_ai_chat(m["candidate"], parsed)
-                with st.expander(f"Conversation with {m['candidate']['name']}"):
-                    st.markdown(convo)
-
-            if st.button("📅 Confirm Interview or Suggest New Time"):
-                time_choice = st.radio("Confirm or Reschedule?", ["Confirm 11 AM", "Suggest New Time"])
-                if time_choice == "Confirm 11 AM":
-                    st.success("✅ AI confirms the interview with all candidates at 11 AM.")
-                else:
-                    new_time = st.text_input("Enter new time (e.g., 3 PM tomorrow)")
-                    if new_time:
-                        st.success(f"✅ AI reschedules interview and confirms with all candidates for {new_time}.")
+                    if st.button(f"Reschedule Interview with {candidate['name']}", key=f"resched_{candidate['name']}"):
+                        st.write(f"AI: Okay, please suggest a new time.")
+                        st.write(f"{candidate['name']}: Tomorrow at 5 PM works for me.")
+                        st.write("AI: Noted. Rescheduled. You will receive an updated calendar invite.")
