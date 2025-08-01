@@ -47,15 +47,12 @@ candidate_pool = [
 
 # ----- FUNCTIONS ----- #
 def parse_job_requirement(requirement_text):
-    prompt = f"""
-    Extract the following from this job requirement:
-    - Role Title
-    - Location
-    - Required Experience (in years)
-    - Must-have Skills (comma-separated)
-    - Preferred Language (if any)
+    prompt = f"""You are a helpful recruiter assistant. Parse the following hiring requirement into structured fields:
+Role Title, Location, Required Skills, Language, Experience
 
-    Input: """{requirement_text}"""
+Input: \"\"\"{requirement_text}\"\"\"
+"""
+
     Output as JSON.
     """
     response = openai.ChatCompletion.create(
