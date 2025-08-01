@@ -1,7 +1,7 @@
 import streamlit as st
 import random
 import time
-import openai
+from openai import OpenAI
 import os
 from dotenv import load_dotenv
 
@@ -26,6 +26,10 @@ CANDIDATES = [
 ]
 
 # Function to simulate AI parsing of job intent
+from openai import OpenAI
+
+client = OpenAI()
+
 def parse_job_intent(requirement_text):
     prompt = f"""
 Extract structured hiring intent from the following requirement:
@@ -42,7 +46,7 @@ Format:
 }}
 """
 
-    response = openai.ChatCompletion.create(
+    response = client.chat.completions.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an expert recruiter assistant."},
@@ -51,7 +55,7 @@ Format:
         temperature=0.5,
         max_tokens=300
     )
-    parsed = response["choices"][0]["message"]["content"].strip()
+    parsed = response.choices[0].message.content.strip()
     return eval(parsed)
 
 # Function to match candidates
