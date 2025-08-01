@@ -1,10 +1,9 @@
 import streamlit as st
 import random
 import time
-from openai import OpenAI
-import os
+import openai
 
-# Set your OpenAI API key securely
+# Set your OpenAI API key securely from Streamlit secrets
 openai.api_key = st.secrets["OPENAI_API_KEY"]
 
 # Dummy candidate pool
@@ -22,10 +21,6 @@ CANDIDATES = [
 ]
 
 # Function to simulate AI parsing of job intent
-from openai import OpenAI
-
-client = OpenAI()
-
 def parse_job_intent(requirement_text):
     prompt = f"""
 Extract structured hiring intent from the following requirement:
@@ -41,7 +36,8 @@ Format:
     "Experience": <string>
 }}
 """
-    response = client.chat.completions.create(
+
+    response = openai.ChatCompletion.create(
         model="gpt-4",
         messages=[
             {"role": "system", "content": "You are an expert recruiter assistant."},
@@ -50,7 +46,7 @@ Format:
         temperature=0.5,
         max_tokens=300
     )
-    parsed = response.choices[0].message.content.strip()
+    parsed = response["choices"][0]["message"]["content"].strip()
     return eval(parsed)
 
 # Function to match candidates
